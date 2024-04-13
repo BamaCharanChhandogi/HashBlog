@@ -15,9 +15,13 @@ const userSchema = new mongoose.Schema(
       min: 6,
       max: 255,
     },
-    emailConfirmed: {
+    emailVerified: {
       type: Boolean,
       default: false,
+    },
+    accountType:{
+      type:String,
+      default:'User'
     },
     password: {
       type: String,
@@ -25,16 +29,16 @@ const userSchema = new mongoose.Schema(
       min: 6,
       max: 1024,
     },
-    imageUrl: {
+    provider:{
+      type:String,
+      default:'rrpb2580'
+    },
+    image: {
       type: String,
     },
     followers:[
         {type:Schema.Types.ObjectId, ref:'Followers'}
-    ],
-    date: {
-      type: Date,
-      default: Date.now,
-    },
+    ]
   },
   { timestamps: true }
 );
