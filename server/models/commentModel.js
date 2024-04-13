@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const commentSchema = new mongoose.Schema({
     userId: {
@@ -21,4 +21,4 @@ const commentSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-export default mongoose.model("Comment", commentSchema);
+export default mongoose.model("Comments", commentSchema);
