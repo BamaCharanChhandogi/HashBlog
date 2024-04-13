@@ -9,7 +9,7 @@ import morgan from "morgan";
 import router from "./routes/index.js";
 
 
-dotenv.config();
+dotenv.config({ path: "../.env"});
 
 const app = express();
 const PORT = process.env.PORT ||8000;
