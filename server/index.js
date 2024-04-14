@@ -27,7 +27,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(morgan("dev"))
 app.use(router);
 
-// app.use(errorMiddleware());
+// app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);

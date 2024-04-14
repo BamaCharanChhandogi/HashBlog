@@ -1,30 +1,39 @@
 import EmailVerification from "../models/emailVerification.js";
 import followersModel from "../models/followersModel.js";
 import Users from "../models/userModel.js";
-import { comparePassword } from "../utils/index.js";
+import { comparePassword, generateToken } from "../utils/index.js";
 import { sendEmailVerification } from "../utils/sendEmail.js";
 
 export const OTPVerification = async (req, res, next) => {
   try {
     const { userId, otp } = req.params;
-    const verifyUser = EmailVerification.findOne(userId);
+    const verifyUser = await EmailVerification.findOne({ userId });
+
+    if (!verifyUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     const { expiresAt, token } = verifyUser;
 
+    if (!token) {
+      return res.status(404).json({ message: "Token not found" });
+    }
+
     if (expiresAt < new Date()) {
-      await EmailVerification.findOneAndDelete(userId);
+      await EmailVerification.findOneAndDelete({ userId });
       return res.status(404).json({ message: "OTP expired" });
+    }
+
+    const isMatch = await comparePassword(otp, token);
+
+    if (isMatch) {
+      await Promise.all([
+        Users.findByIdAndUpdate({ _id: userId }, { emailVerified: true }),
+        EmailVerification.findOneAndDelete({ userId }),
+      ]);
+      return res.status(200).json({ message: "OTP verified successfully" });
     } else {
-      const isMatch = await comparePassword(otp, token);
-      if (isMatch) {
-        await Promise.all([
-          User.findByIdAndUpdate({ _id: userId }, { emailVerified: true }),
-          EmailVerification.findOneAndDelete(userId),
-        ]);
-        return res.status(200).json({ message: "OTP verified successfully" });
-      } else {
-        return res.status(404).json({ message: "OTP is incorrect" });
-      }
+      return res.status(404).json({ message: "OTP is incorrect" });
     }
   } catch (error) {
     console.log(error);
@@ -40,11 +49,12 @@ export const resendOTP = async (req, res, next) => {
     }
     user.password = undefined;
 
-    const token = createJWT(user?._id);
+    const token = generateToken(user?._id);
     if (user.accountType === "writer") {
       sendEmailVerification(user, res, token);
       return res.status(200).json({ message: "OTP sent successfully" });
     } else {
+      console.log(user);
       return res.status(404).json({ message: "User is not a writer" });
     }
   } catch (error) {
@@ -55,8 +65,10 @@ export const resendOTP = async (req, res, next) => {
 export const followWriter = async (req, res, next) => {
   try {
     const followerId = req.body.user.userId;
+    // const followerId = '661b8fdf7ea13bba9c13dd13';  
     const { id } = req.params;
 
+    console.log(followerId, id);
     const checks = await followersModel.findOne({ followerId });
 
     if (checks)
