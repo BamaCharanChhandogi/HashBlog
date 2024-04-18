@@ -11,9 +11,9 @@ const Logo = ({ type }) => {
       >
         Blog
         <span
-          className={`text-3xl text-rose-500 ${type && " text-5xl font-bold"}`}
+          className={`text-3xl text-pink-500 ${type && " text-5xl font-bold"}`}
         >
-          Wave
+          Show
         </span>
       </Link>
     </div>
