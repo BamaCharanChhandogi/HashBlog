@@ -6,7 +6,7 @@ export const getGoogleSignUp = async () => {
     const response = await axios
       .get(`${API_URL}/auth/google`)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -20,7 +20,7 @@ export const getGoogleSignUp = async () => {
 export const emailSignUp = async (data) => {
   try {
     const response = await axios.post(`${API_URL}/auth/register`, data);
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     const err = error.response?.data || error.message;
@@ -33,7 +33,7 @@ export const emailSignUp = async (data) => {
 export const emailSignIn = async (data) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, data);
-    console.log(response.data);
+    // console.log(response.data);
     return response?.data;
   } catch (error) {
     const err = error.response?.data || error.message;
@@ -62,6 +62,48 @@ export const getWriterProfile = async (id) => {
     return data?.data;
   } catch (error) {
     const err = error.response?.data || error?.message;
+    console.log(err);
+    return err;
+  }
+};
+
+export const getPostComments = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/posts/comments/${id}`);
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    const err = error.response?.data || error.message;
+    console.log(err);
+    return err;
+  }
+};
+export const postComments = async (id,token,data) => {
+  try {
+    const response = await axios.post(`${API_URL}/posts/comment/${id}`,data,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    const err = error.response?.data || error.message;
+    console.log(err);
+    return err;
+  }
+};
+export const deletePostComments = async (id,token,postId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/posts/comment/${id}/${postId}`,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    const err = error.response?.data || error.message;
     console.log(err);
     return err;
   }
