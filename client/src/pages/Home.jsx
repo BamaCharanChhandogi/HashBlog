@@ -9,10 +9,10 @@ import {
 } from "../components";
 
 import { CATEGORIES, popular, posts } from "../utils/data";
+import { usePosts } from "../hooks/post-hooks";
 
 const Home = () => {
-  const numOfPages = 4;
-  const [page, setPage] = useState(0);
+  const {posts,numOfPages,setPage} = usePosts({writerId:""});
 
   const randomIndex = Math.floor(Math.random() * posts.length);
 

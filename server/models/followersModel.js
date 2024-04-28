@@ -1,16 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const followersSchema = new mongoose.Schema({
-    followerId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Users",
-        required:true
-    },
-    writerId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Users",
-        required:true
-    }
-}, { timestamps: true });
+const followersSchema = new mongoose.Schema(
+  {
+    followerId: { type: Schema.Types.ObjectId, ref: "Users" },
+    writerId: { type: Schema.Types.ObjectId, ref: "Users" },
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model("Followers", followersSchema);
+const Followers = mongoose.model("Followers", followersSchema);
+
+export default Followers;

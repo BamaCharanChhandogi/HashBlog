@@ -1,16 +1,13 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const viewsSchema = new mongoose.Schema({
-    postId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Posts",
-        required: true,
-    },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Users",
-        required: true,
-    },
-}, { timestamps: true });
+const viewsSchema = new mongoose.Schema(
+  {
+    user: { type: Schema.Types.ObjectId, ref: "Users" },
+    post: { type: Schema.Types.ObjectId, ref: "Posts" },
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model("Views", viewsSchema);
+const Views = mongoose.model("Views", viewsSchema);
+
+export default Views;

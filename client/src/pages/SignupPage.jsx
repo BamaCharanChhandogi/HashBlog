@@ -6,9 +6,12 @@ import { IoArrowBackCircleSharp } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { Toaster, toast } from "sonner";
 import { Button, Divider, Inputbox, Logo } from "../components";
+import { emailSignUp, getGoogleSignUp } from "../utils/apiCalls";
+import useStore from "../store";
+import { saveUserInfo } from "../utils";
 
 const SignupPage = () => {
-  const user = {};
+  const {user,signIn,setIsLoading} = useStore();
   const [showForm, setShowForm] = useState(false);
   const [data, setData] = useState({
     firstName: "",
@@ -28,9 +31,33 @@ const SignupPage = () => {
     });
   };
 
-  const googleLogin = async () => {};
+  const googleLogin = useGoogleLogin({
+    onSuccess: async(tokenResponse) => {
+      setIsLoading(true);
+      const user = await getGoogleSignUp(tokenResponse.access_token);
+      setIsLoading(false);
+      if (user.success===true) {
+        saveUserInfo(user,signIn);
+        toast.success("Logged in successfully");
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
+  })
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const user = await emailSignUp(data);
+    console.log(user);
+    setIsLoading(false);
+    if (user.success===true) {
+      saveUserInfo(user,signIn);
+      toast.success("Logged in successfully");
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
 
   if (user.token) window.location.replace("/");
 

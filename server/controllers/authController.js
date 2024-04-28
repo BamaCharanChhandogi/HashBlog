@@ -1,10 +1,6 @@
-import User from "../models/userModel.js";
-import {
-  comparePassword,
-  generateToken,
-  hashPassword,
-} from "../utils/index.js";
-import { sendEmailVerification } from "../utils/sendEmail.js";
+import Users from "../models/userModel.js";
+import { compareString, createJWT, hashString } from "../utils/index.js";
+import { sendVerificationEmail } from "../utils/sendEmail.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -12,118 +8,144 @@ export const register = async (req, res, next) => {
       firstName,
       lastName,
       email,
-      image,
       password,
+      image,
       accountType,
       provider,
     } = req.body;
-    if (!firstName || !lastName || !email || !password) {
-      return next("Please fill all the fields");
-    }
-    const userExist = await User.findOne({ email });
-    if (userExist) {
-      return next("User already exists");
-    }
-    if (accountType == "writer" && !image) {
-      return next("Please provide image");
-    }
-    // password
-    const hashPasswords = await hashPassword(password);
 
-    //add data to the database
-    const newUser = await User.create({
+    //validate fileds
+    if (!(firstName || lastName || email || password)) {
+      return next("Provide Required Fields!");
+    }
+
+    if (accountType === "Writer" && !image)
+      return next("Please provide profile picture");
+
+    const userExist = await Users.findOne({ email });
+
+    if (userExist) {
+      return next("Email Address already exists. Try Login");
+    }
+
+    const hashedPassword = await hashString(password);
+
+    const user = await Users.create({
       name: firstName + " " + lastName,
       email,
+      password: !provider ? hashedPassword : "",
       image,
-      password: !provider ? hashPasswords : "",
       accountType,
       provider,
     });
 
-    // remove password from the output
-    newUser.password = undefined;
-    const token = generateToken(newUser?._id);
-    if (accountType === "writer") {
-      sendEmailVerification(newUser, res, token);
+    user.password = undefined;
+
+    const token = createJWT(user?._id);
+
+    //send email verification if account type is writer
+    if (accountType === "Writer") {
+      sendVerificationEmail(user, res, token);
     } else {
       res.status(201).json({
         success: true,
-        message: "User created successfully",
+        message: "Account created successfully",
+        user,
         token,
-        user: newUser,
       });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(404).json({ message: err.message });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
   }
 };
 
-
-
-// googleSignup
-export const googleSignup = async (req, res, next) => {
+export const googleSignUp = async (req, res, next) => {
   try {
-    const { email, name, image, emailVerified } = req.body;
-    if (!email || !name) {
-      return next("Please provide email and name");
+    const { name, email, image, emailVerified } = req.body;
+
+    const userExist = await Users.findOne({ email });
+
+    if (userExist) {
+      next("Email Address already exists. Try Login");
+      return;
     }
-    if (!emailVerified) {
-      return next("Please verify your email");
-    }
-    const user = await User.findOne({ email });
-    if (user) {
-      return next("User already exists");
-    }
-    const newUser = await User.create({
+
+    const user = await Users.create({
       name,
       email,
       image,
-      provider: "google",
+      provider: "Google",
       emailVerified,
     });
-    newUser.password = undefined;
-    const token = generateToken(newUser?._id);
+
+    user.password = undefined;
+
+    const token = createJWT(user?._id);
+
     res.status(201).json({
       success: true,
-      message: "User created successfully",
+      message: "Account created successfully",
+      user,
       token,
-      user: newUser,
     });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json({ message: err.message });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: error.message });
   }
 };
 
-// login
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return next("Please provide email and password");
+
+    //validation
+    if (!email) {
+      return next("Please Provide User Credentials");
     }
-    const user = await User.findOne({ email }).select("+password");
+
+    // find user by email
+    const user = await Users.findOne({ email }).select("+password");
+
     if (!user) {
-      return next("Invalid credentials");
+      return next("Invalid email or password");
     }
-    const isMatch = await comparePassword(password, user?.password);
+
+    // Google account signed in
+    if (!password && user?.provider === "Google") {
+      const token = createJWT(user?._id);
+
+      return res.status(201).json({
+        success: true,
+        message: "Login successfully",
+        user,
+        token,
+      });
+    }
+
+    // compare password
+    const isMatch = await compareString(password, user?.password);
+
     if (!isMatch) {
-      return next("Invalid credentials");
+      return next("Invalid email or password");
     }
-    if (user?.accountType === "writer" && !user?.emailVerified) {
-      return next("Please verify your email");
+
+    if (user?.accountType === "Writer" && !user?.emailVerified) {
+      return next("Please verify your email address.");
     }
+
     user.password = undefined;
-    const token = generateToken(user?._id);
+
+    const token = createJWT(user?._id);
+
     res.status(201).json({
       success: true,
-      message: "User logged in successfully",
-      token,
+      message: "Login successfully",
       user,
+      token,
     });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json({ message: err.message });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ success: "failed", message: error.message });
   }
 };

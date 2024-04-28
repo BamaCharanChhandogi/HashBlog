@@ -4,9 +4,12 @@ import { FcGoogle } from "react-icons/fc";
 import { Toaster, toast } from "sonner";
 import { Link } from "react-router-dom";
 import { Button, Divider, Inputbox, Logo } from "../components";
+import  useStore  from "../store";
+import { emailSignIn } from "../utils/apiCalls";
+import { saveUserInfo } from "../utils";
 
 const LoginPage = () => {
-  const user = {};
+  const {user,signIn,setIsLoading} = useStore();
 
   const [data, setData] = useState({
     email: "",
@@ -24,7 +27,19 @@ const LoginPage = () => {
 
   const googleLogin = async () => {};
 
-  const handleSubmit = async () => {};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const user = await emailSignIn(data);
+    console.log(user);
+    setIsLoading(false);
+    if (user.success===true) {
+      saveUserInfo(user,signIn);
+      toast.success("Logged in successfully");
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
 
   if (user.token) window.location.replace("/");
   return (

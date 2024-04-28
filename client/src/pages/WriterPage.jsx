@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaUserCheck } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import NoProfile from "../assets/profile.png";
+import NoProfile from "../assets/profile.png"
 import {
   Button,
   Card,
@@ -11,7 +11,7 @@ import {
 } from "../components";
 import useStore from "../store";
 import { formatNumber } from "../utils";
-import { popular, posts, writer } from "../utils/dummyData";
+import { popular, posts, writer } from "../utils/data";
 
 const WriterPage = () => {
   const { user } = useStore();

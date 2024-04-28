@@ -1,75 +1,72 @@
-import EmailVerification from "../models/emailVerification.js";
-import followersModel from "../models/followersModel.js";
+import Verification from "../models/emailVerification.js";
+import Followers from "../models/followersModel.js";
 import Users from "../models/userModel.js";
-import { comparePassword, generateToken } from "../utils/index.js";
-import { sendEmailVerification } from "../utils/sendEmail.js";
+import { compareString, createJWT } from "../utils/index.js";
+import { sendVerificationEmail } from "../utils/sendEmail.js";
 
-export const OTPVerification = async (req, res, next) => {
+export const OPTVerification = async (req, res, next) => {
   try {
     const { userId, otp } = req.params;
-    const verifyUser = await EmailVerification.findOne({ userId });
 
-    if (!verifyUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const result = await Verification.findOne({ userId });
 
-    const { expiresAt, token } = verifyUser;
+    const { expiresAt, token } = result;
 
-    if (!token) {
-      return res.status(404).json({ message: "Token not found" });
-    }
+    // token has expired, delete token
+    if (expiresAt < Date.now()) {
+      await Verification.findOneAndDelete({ userId });
 
-    if (expiresAt < new Date()) {
-      await EmailVerification.findOneAndDelete({ userId });
-      return res.status(404).json({ message: "OTP expired" });
-    }
-
-    const isMatch = await comparePassword(otp, token);
-
-    if (isMatch) {
-      await Promise.all([
-        Users.findByIdAndUpdate({ _id: userId }, { emailVerified: true }),
-        EmailVerification.findOneAndDelete({ userId }),
-      ]);
-      return res.status(200).json({ message: "OTP verified successfully" });
+      const message = "Verification token has expired.";
+      res.status(404).json({ message });
     } else {
-      return res.status(404).json({ message: "OTP is incorrect" });
+      const isMatch = await compareString(otp, token);
+
+      if (isMatch) {
+        await Promise.all([
+          Users.findOneAndUpdate({ _id: userId }, { emailVerified: true }),
+          Verification.findOneAndDelete({ userId }),
+        ]);
+
+        const message = "Email verified successfully";
+        res.status(200).json({ message });
+      } else {
+        const message = "Verification failed or link is invalid";
+        res.status(404).json({ message });
+      }
     }
   } catch (error) {
     console.log(error);
-    return res.status(404).json({ message: "something went wrong" });
+    res.status(404).json({ message: "Something went wrong" });
   }
 };
+
 export const resendOTP = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await EmailVerification.findOneAndDelete(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+
+    await Verification.findOneAndDelete({ userId: id });
+
+    const user = await Users.findById(id);
+
     user.password = undefined;
 
-    const token = generateToken(user?._id);
-    if (user.accountType === "writer") {
-      sendEmailVerification(user, res, token);
-      return res.status(200).json({ message: "OTP sent successfully" });
-    } else {
-      console.log(user);
-      return res.status(404).json({ message: "User is not a writer" });
-    }
+    const token = createJWT(user?._id);
+
+    if (user?.accountType === "Writer") {
+      sendVerificationEmail(user, res, token);
+    } else res.status(404).json({ message: "Something went wrong" });
   } catch (error) {
     console.log(error);
-    return res.status(404).json({ message: "something went wrong" });
+    res.status(404).json({ message: "Something went wrong" });
   }
 };
-export const followWriter = async (req, res, next) => {
+
+export const followWritter = async (req, res, next) => {
   try {
     const followerId = req.body.user.userId;
-    // const followerId = '661b8fdf7ea13bba9c13dd13';  
     const { id } = req.params;
 
-    console.log(followerId, id);
-    const checks = await followersModel.findOne({ followerId });
+    const checks = await Followers.findOne({ followerId });
 
     if (checks)
       return res.status(201).json({
@@ -79,7 +76,7 @@ export const followWriter = async (req, res, next) => {
 
     const writer = await Users.findById(id);
 
-    const newFollower = await followersModel.create({
+    const newFollower = await Followers.create({
       followerId,
       writerId: id,
     });
@@ -97,10 +94,16 @@ export const followWriter = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 export const updateUser = async (req, res, next) => {
   try {
     const { userId } = req.body.user;
     const { firstName, lastName, image } = req.body;
+
+    if (!(firstName || lastName)) {
+      return next("Please provide all required fields");
+    }
+
     const updateUser = {
       name: firstName + " " + lastName,
       image,
@@ -116,7 +119,7 @@ export const updateUser = async (req, res, next) => {
     user.password = undefined;
 
     res.status(200).json({
-      success: true,
+      sucess: true,
       message: "User updated successfully",
       user,
       token,
@@ -126,30 +129,31 @@ export const updateUser = async (req, res, next) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 export const getWriter = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-    
-        const user = await Users.findById(id).populate({
-          path: "followers",
-          select: "followerId",
-        });
-    
-        if (!user) {
-          return res.status(200).send({
-            success: false,
-            message: "Writer Not Found",
-          });
-        }
-    
-        user.password = undefined;
-    
-        res.status(200).json({
-          success: true,
-          data: user,
-        });
-      } catch (error) {
-        console.log(error);
-        res.status(404).json({ message: "Something went wrong" });
-      }
+  try {
+    const { id } = req.params;
+
+    const user = await Users.findById(id).populate({
+      path: "followers",
+      select: "followerId",
+    });
+
+    if (!user) {
+      return res.status(200).send({
+        success: false,
+        message: "Writer Not Found",
+      });
+    }
+
+    user.password = undefined;
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ message: "Something went wrong" });
+  }
 };

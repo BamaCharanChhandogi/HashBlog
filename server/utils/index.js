@@ -1,24 +1,36 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import bcrypt from "bcryptjs";
+import JWT from "jsonwebtoken";
 
-// Generate token
-export const generateToken = (id) => {
-    return jwt.sign({ user_Id:id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE
-    });
+export const hashString = async (userValue) => {
+  const salt = await bcrypt.genSalt(10);
+
+  const hashedpassword = await bcrypt.hash(userValue, salt);
+  return hashedpassword;
+};
+
+export const compareString = async (userPassword, password) => {
+  try {
+    const isMatch = await bcrypt?.compare(userPassword, password);
+    return isMatch;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//JSON WEBTOKEN
+export function createJWT(id) {
+  return JWT.sign({ userId: id }, process.env.JWT_SECRET_KEY, {
+    expiresIn: "1d",
+  });
 }
 
-// Compare password
-export const comparePassword = async (password, hashedPassword) => {
-    return await bcrypt.compare(password, hashedPassword);
-}
+export function generateOTP() {
+  const min = 100000; // Minimum 6-digit number
+  const max = 999999; // Maximum 6-digit number
 
-// Hash password
-export const hashPassword = async (password) => {
-    const salt = await bcrypt.genSalt(10);
-    return await bcrypt.hash(password, salt);
-}
-// generate 6 digit OTP
-export const generateOTP = () => {
-    return Math.floor(100000 + Math.random() * 900000);
+  let randomNumber;
+
+  randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return randomNumber;
 }
