@@ -9,10 +9,11 @@ import {
 } from "../components";
 
 import { CATEGORIES, popular, posts } from "../utils/data";
-import { usePosts } from "../hooks/post-hooks";
+import {PostsHook, usePopularPosts} from "../hooks/post-hooks";
 
 const Home = () => {
-  const {posts,numOfPages,setPage} = usePosts({writerId:""});
+  const popular =usePopularPosts();
+  const { posts, numOfPages, setPage } = PostsHook({ writerId: "" });
 
   const randomIndex = Math.floor(Math.random() * posts.length);
 
@@ -63,7 +64,7 @@ const Home = () => {
 
             <div className='w-full flex items-cemter justify-center'>
               <Pagination
-                totalPages={numOfPages}
+                totalPages={parseInt(numOfPages)}
                 onPageChange={handlePageChange}
               />
             </div>

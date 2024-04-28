@@ -190,7 +190,7 @@ export const createPost = async (req, res, next) => {
     });
 
     res.status(200).json({
-      sucess: true,
+      success: true,
       message: "Post created successfully",
       data: post,
     });
@@ -242,7 +242,7 @@ export const updatePost = async (req, res, next) => {
     const post = await Posts.findByIdAndUpdate(id, { status }, { new: true });
 
     res.status(200).json({
-      sucess: true,
+      success: true,
       message: "Action performed successfully",
       data: post,
     });
@@ -279,7 +279,7 @@ export const getPosts = async (req, res, next) => {
     //records count
     const totalPost = await Posts.countDocuments(queryResult);
 
-    const numOfPage = Math.ceil(totalPost / limit);
+    const numOfPages = Math.ceil(totalPost / limit);
 
     queryResult = queryResult.skip(skip).limit(limit);
 
@@ -290,7 +290,7 @@ export const getPosts = async (req, res, next) => {
       totalPost,
       data: posts,
       page,
-      numOfPage,
+      numOfPages,
     });
   } catch (error) {
     console.log(error);
@@ -397,7 +397,7 @@ export const getComments = async (req, res, next) => {
       .sort({ _id: -1 });
 
     res.status(200).json({
-      sucess: true,
+      success: true,
       message: "successfully",
       data: postComments,
     });

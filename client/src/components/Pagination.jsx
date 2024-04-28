@@ -10,7 +10,7 @@ const Pagination = ({ totalPages, onPageChange }) => {
   return (
     <div className='pagination'>
       <button
-        className='pagination-btn'
+        className='pagination-btn m-2 border p-2 bg-gray-200 rounded'
         onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         disabled={currentPage === 1}
       >
@@ -19,7 +19,7 @@ const Pagination = ({ totalPages, onPageChange }) => {
 
       {showEllipses && currentPage > 4 && (
         <>
-          <button className='pagination-btn' onClick={() => onPageChange(1)}>
+          <button className='pagination-btn border px-3 py-2 bg-red-500 rounded' onClick={() => onPageChange(1)}>
             1
           </button>
           <span className='pagination-ellipsis'>...</span>
@@ -32,7 +32,7 @@ const Pagination = ({ totalPages, onPageChange }) => {
       ).map((page) => (
         <button
           key={page}
-          className={`pagination-btn ${page === currentPage ? "active" : ""}`}
+          className={`pagination-btn border px-3 py-2 bg-red-500 rounded ${page === currentPage ? "active" : ""}`}
           onClick={() => onPageChange(page)}
         >
           {page}
@@ -43,7 +43,7 @@ const Pagination = ({ totalPages, onPageChange }) => {
         <>
           <span className='pagination-ellipsis'>...</span>
           <button
-            className='pagination-btn'
+            className='pagination-btn border px-3 py-2 bg-red-500 rounded'
             onClick={() => onPageChange(totalPages)}
           >
             {totalPages}
@@ -52,7 +52,7 @@ const Pagination = ({ totalPages, onPageChange }) => {
       )}
 
       <button
-        className='pagination-btn'
+        className='pagination-btn m-2 border p-2 bg-gray-200 rounded'
         onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
         disabled={currentPage === totalPages}
       >

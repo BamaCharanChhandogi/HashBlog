@@ -4,20 +4,29 @@ import { Link, useParams } from "react-router-dom";
 import { PopularPosts, PopularWriters, PostComments } from "../components";
 import useStore from "../store";
 import { popular, posts } from "../utils/data";
+import { getSinglePost } from "../utils/apiCalls";
+import { usePopularPosts } from "../hooks/post-hooks";
 
 const BlogDetails = () => {
   const { setIsLoading } = useStore();
+  const popular = usePopularPosts();
 
   const { id } = useParams();
-  const [post, setPost] = useState(posts[1]);
+  const [post, setPost] = useState([]);
 
   useEffect(() => {
+    const fetchPost=()=>{
+        setIsLoading(true)
+        getSinglePost(id).then((data)=>{
+            setPost(data?.data || {})
+            setIsLoading(false)
+        })
+    }
     if (id) {
-      // fetch post
+      fetchPost();
       window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     }
   }, [id]);
-
   if (!post)
     return (
       <div className='w-full h-full py-8 flex items-center justify-center'>

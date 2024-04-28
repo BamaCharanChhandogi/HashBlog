@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaUserCheck } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import NoProfile from "../assets/profile.png"
@@ -12,22 +12,35 @@ import {
 import useStore from "../store";
 import { formatNumber } from "../utils";
 import { popular, posts, writer } from "../utils/data";
+import { getWriterProfile } from "../utils/apiCalls";
+import { PostsHook } from "../hooks/post-hooks";
 
 const WriterPage = () => {
   const { user } = useStore();
 
   const { id } = useParams();
-  const numOfPages = 4;
-  const [page, setPage] = useState(0);
+  const {posts,numOfPages,setPage} = PostsHook({writerId: id});
+  const [writer, setWriter] = useState(null);
 
   const handlePageChange = (val) => {
     setPage(val);
 
     console.log(val);
   };
-  // const [writer, setWriter] = useState(null);
+  useEffect(() => {
+    const fetchWriter=async()=>{
+      const data=await getWriterProfile(id);
+      setWriter(data);
+      
+    }
+    if (id) {
+      fetchWriter();
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    }
+  },[id]);
+  console.log(writer);
 
-  const followerIds = writer.followers.map((f) => fetch.followerId);
+  const followerIds = writer?.followers?.map((f) => fetch.followerId);
 
   if (!writer)
     return (

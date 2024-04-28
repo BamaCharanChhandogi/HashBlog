@@ -35,7 +35,7 @@ const isLoading = false;
           <Route path='/' element={<Home/>} />
           <Route path='/:slug/:id?' element={<BlogDetails/>} />
           <Route path='/category' element={<CategoriesPage/>} />
-          <Route path='/:writer/:id?' element={<WriterPage/>} />
+          <Route path='/writer/:id?' element={<WriterPage/>} />
           </Route>
           <Route path='/sign-up' element={<SignupPage/>} />
           <Route path='/sign-in' element={<LoginPage/>} />
