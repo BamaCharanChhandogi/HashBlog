@@ -54,6 +54,22 @@ export const getSinglePost = async (id) => {
     return err;
   }
 };
+export const followWriter = async (id, token) => {
+  try {
+    const response = await axios.post(`${API_URL}/users/follower/${id}`, null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // console.log(response.data);
+    return response?.data;
+}
+catch (error) {
+  const err = error.response?.data || error.message;
+  console.log(err);
+  return err;
+}
+}
 // get writer Profile
 export const getWriterProfile = async (id) => {
   try {

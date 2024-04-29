@@ -12,7 +12,7 @@ import {
 import useStore from "../store";
 import { formatNumber } from "../utils";
 import { popular, posts, writer } from "../utils/data";
-import { getWriterProfile } from "../utils/apiCalls";
+import { followWriter, getWriterProfile } from "../utils/apiCalls";
 import { PostsHook } from "../hooks/post-hooks";
 
 const WriterPage = () => {
@@ -40,7 +40,17 @@ const WriterPage = () => {
   },[id]);
   console.log(writer);
 
-  const followerIds = writer?.followers?.map((f) => fetch.followerId);
+  const fetchWriter=async()=>{
+    const data=await getWriterProfile(id);
+    setWriter(data);
+  }
+  const handleFollow=async()=>{
+    const res = await followWriter(id,user?.token);
+    if(res.success===true){
+      fetchWriter();
+    }
+  }
+  const followerIds = writer?.followers?.map((f) => f.followerId);
 
   if (!writer)
     return (
@@ -51,7 +61,7 @@ const WriterPage = () => {
 
   return (
     <div className='px-0 2xl:px-20 '>
-      <div className='w-full md:h-60 flex flex-col gap-5 items-center md:flex-row bg-black dark:bg-gradient-to-r from-[#020b19] via-[#071b3e] to-[#020b19]  mt-5 mb-10 rounded-md p-5 md:px-20'>
+      <div className='w-full md:h-90 flex flex-col gap-5 items-center md:flex-col bg-black dark:bg-gradient-to-r from-[#020b19] via-[#930f77] to-[#020b19]  mt-5 mb-10 rounded-md p-5 md:px-20'>
         <img
           src={writer?.image || NoProfile}
           alt='Writer'
@@ -77,13 +87,12 @@ const WriterPage = () => {
               <span className='text-gray-500'>Posts</span>
             </div>
           </div>
-
           {user?.token && (
             <div>
               {!followerIds?.includes(user?.user?._id) ? (
                 <Button
                   label='Follow'
-                  onClick={() => {}}
+                  onClick={() => handleFollow()}
                   styles='text-slate-800 text-semibold md:-mt-4 px-6 py-1 rounded-full bg-white'
                 />
               ) : (

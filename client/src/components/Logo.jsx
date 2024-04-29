@@ -9,11 +9,11 @@ const Logo = ({ type }) => {
           type && "text-white  text-4xl"
         }`}
       >
-        Blog
+        Hash
         <span
           className={`text-3xl text-pink-500 ${type && " text-5xl font-bold"}`}
         >
-          Show
+          Node
         </span>
       </Link>
     </div>

@@ -11,6 +11,7 @@ import useStore from "../store";
 import Button from "./Button";
 import Logo from "./Logo";
 import ThemeSwitch from "./Switch";
+import { getWriterProfile } from "../utils/apiCalls";
 
 function getInitials(fullName) {
   const names = fullName.split(" ");
@@ -116,17 +117,23 @@ const MobileMenu = ({ user, signOut }) => {
   );
 };
 
+
 const Navbar = () => {
   const { user, signOut } = useStore();
   const [showProfile, setShowProfile] = useState(false);
-
+  
   const handleSignOut = () => {
     localStorage.removeItem("userInfo");
     signOut();
   };
+  const fetchProfile=async()=>{
+    const profile = await getWriterProfile(user?.user._id);
+    console.log(profile);
+
+  }
   return (
     <nav className='flex flex-col md:flex-row w-full py-5  items-center justify-between gap-4 md:gap-0'>
-      <div className='flex gap-2 text-[20px] md:hidden lg:flex'>
+      {/* <div className='flex gap-2 text-[20px] md:hidden lg:flex'>
         <Link to='/' className='text-red-600'>
           <FaYoutube />
         </Link>
@@ -139,13 +146,13 @@ const Navbar = () => {
         <Link to='/' className='text-blue-500'>
           <FaTwitterSquare />
         </Link>
-      </div>
+      </div> */}
 
       <Logo />
       <div className='hidden md:flex gap-14 items-center'>
         <ul className='flex gap-8 text-base text-black dark:text-white'>
-          <Link to='/'>Home</Link>
-          <Link to='/'>Contact</Link>
+          <Link to='/'>My feed</Link>
+          <Link to='/'>Discussion</Link>
           <Link to='/'>About</Link>
         </ul>
 
@@ -163,21 +170,21 @@ const Navbar = () => {
                   <img
                     src={user?.user.image}
                     alt='Profile'
-                    className='w-8 h-8 rounded-full'
+                    className='w-10 h-10 rounded-full'
                   />
                 ) : (
                   <span className='text-white w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center'>
                     {getInitials(user?.user.name)}
                   </span>
                 )}
-                <span className='font-medium text-black dark:text-gray-500'>
+                {/* <span className='font-medium text-black dark:text-gray-500'>
                   {user?.user?.name?.split(" ")[0]}
-                </span>
+                </span> */}
               </div>
 
               {showProfile && (
                 <div className='absolute bg-white dark:bg-[#2f2d30] py-6 px-6 flex flex-col shadow-2xl z-50 right-0 gap-3 rounded'>
-                  <span className='dark:text-white'>Profile</span>
+                  <Link to={`/writer/${user?.user?._id}`} className='dark:text-white' onClick={fetchProfile}>Profile</Link>
                   <span
                     className='border-t border-slate-300 text-rose-700'
                     onClick={handleSignOut}
