@@ -64,6 +64,9 @@ const MobileMenu = ({ user, signOut }) => {
             <li onClick={toggleMenu}>
               <Link to='/'>About</Link>
             </li>
+            <li onClick={toggleMenu}>
+              <Link to='/'>Create Post</Link>
+            </li>
           </ul>
           <div className='flex gap-2 items-center'>
             {user?.token ? (
@@ -150,10 +153,11 @@ const Navbar = () => {
 
       <Logo />
       <div className='hidden md:flex gap-14 items-center'>
-        <ul className='flex gap-8 text-base text-black dark:text-white'>
+        <ul className='flex gap-8 text-base items-center text-black dark:text-white'>
           <Link to='/'>My feed</Link>
-          <Link to='/'>Discussion</Link>
-          <Link to='/'>About</Link>
+          <Link to='/'>Chat</Link>
+          {/* <Link to='/'>About</Link> */}
+          <Link to='http://localhost:3000/Contents' target='_blank' className="border-2 border-pink-500 p-2 rounded-md hover:bg-black bg-pink-500 hover:text-white">Create Post</Link>
         </ul>
 
         {/* theme switch */}

@@ -139,7 +139,7 @@ const Navbar = () => {
         </div>
       )}
 
-      <div className='hidden lg:flex gap-2 text-[20px]'>
+      {/* <div className='hidden lg:flex gap-2 text-[20px]'>
         <Link to='/' className='text-red-600'>
           <FaYoutube />
         </Link>
@@ -152,7 +152,7 @@ const Navbar = () => {
         <Link to='/' className='text-blue-6 00'>
           <FaTwitterSquare />
         </Link>
-      </div>
+      </div> */}
 
       <Logo />
 

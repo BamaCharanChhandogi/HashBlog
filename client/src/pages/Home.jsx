@@ -36,7 +36,7 @@ const Home = () => {
 
       <div className='px-0 lg:pl-20 2xl:px-20 '>
         {/* Categories */}
-        <div className='mt-6 md:mt-0'>
+        {/* <div className='mt-6 md:mt-0'>
           <p className='text-2xl font-semibold text-gray-600 dark:text-white'>
             Popular Categories
           </p>
@@ -52,7 +52,7 @@ const Home = () => {
               </Link>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Blog Post */}
         <div className='w-full flex flex-col md:flex-row gap-10 2xl:gap-20'>
@@ -73,10 +73,10 @@ const Home = () => {
           {/* RIGHT */}
           <div className='w-full md:w-1/4 flex flex-col gap-y-12'>
             {/* POPULAR POSTS */}
-            <PopularPosts posts={popular?.posts} />
+            {/* <PopularPosts posts={popular?.posts} /> */}
 
             {/* POPULAR WRITERS */}
-            <PopularWriters data={popular?.writers} />
+            {/* <PopularWriters data={popular?.writers} /> */}
           </div>
         </div>
       </div>

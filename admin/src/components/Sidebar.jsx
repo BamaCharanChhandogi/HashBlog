@@ -19,12 +19,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 
 const mockdata = [
-  { icon: IconGauge, label: "Dashboard", to: "dashboard" },
-  { icon: IconDeviceDesktopAnalytics, label: "Analytics", to: "analytics" },
+  // { icon: IconGauge, label: "Dashboard", to: "dashboard" },
+  // { icon: IconDeviceDesktopAnalytics, label: "Analytics", to: "analytics" },
   { icon: IconCalendarStats, label: "Content", to: "contents" },
   { icon: IconUser, label: "Followers", to: "followers" },
   { icon: BsPencilSquare, label: "Create Post", to: "write" },
-  { icon: IconSettings, label: "Settings" },
+  // { icon: IconSettings, label: "Settings" },
 ];
 
 const NavbarLink = ({ icon: Icon, label, active, onClick }) => {
