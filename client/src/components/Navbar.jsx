@@ -157,7 +157,7 @@ const Navbar = () => {
           <Link to='/'>My feed</Link>
           <Link to='/'>Chat</Link>
           {/* <Link to='/'>About</Link> */}
-          <Link to='http://localhost:3000/Contents' target='_blank' className="border-2 border-pink-500 p-2 rounded-md hover:bg-black bg-pink-500 hover:text-white">Create Post</Link>
+          <Link to='https://hash-blog-u6c8-admin.vercel.app/Contents' target='_blank' className="border-2 border-pink-500 p-2 rounded-md hover:bg-black bg-pink-500 hover:text-white">Create Post</Link>
         </ul>
 
         {/* theme switch */}
