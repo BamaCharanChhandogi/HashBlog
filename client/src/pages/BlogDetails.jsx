@@ -116,7 +116,7 @@ const BlogDetails = () => {
         </div>
 
         {/* RIGHT */}
-        <div className="w-full md:w-2/4 flex flex-col gap-y-12 border-2 p-2 pb-10 rounded-md h-fit">
+        <div className="md:w-2/4 flex flex-col gap-y-12 border-2 p-2 pb-10 rounded-md h-fit">
           {/* Summarize Article */}
           <div className="w-full flex flex-col gap-4">
             <h1 className="text-3xl text-center m-3 font-bold text-slate-800 dark:text-white">
@@ -149,10 +149,7 @@ const BlogDetails = () => {
                       {error}
                     </span>
                   ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg text-slate-700 dark:text-gray-400">
-                        {summarizeText}
-                      </span>
+                    <div className="flex flex-col items-center gap-2">
                       <button
                         onClick={() => handleSpeak(summarizeText.props.children)}
                         className="px-2 py-1 bg-blue-500 text-white rounded-md"
@@ -165,6 +162,9 @@ const BlogDetails = () => {
                       >
                         🔇 Stop
                       </button>
+                      <span className="text-lg text-slate-700 dark:text-gray-400">
+                        {summarizeText}
+                      </span>
                     </div>
                   )}
                 </>
