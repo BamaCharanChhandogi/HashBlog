@@ -2,6 +2,8 @@
 
 HashBlog is a full-stack blogging platform built with React.js for the front-end and Node.js with Express.js for the back-end. It allows users to create, read, update, and delete blog posts.
 
+![Screenshot 2024-04-29 165919](https://github.com/BamaCharanChhandogi/HashBlog/assets/69814563/e2ff152d-6400-45ab-a248-71c70599ebbf)
+
 ## Features
 
 - User authentication (register, login, logout)
